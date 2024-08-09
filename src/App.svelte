@@ -4,6 +4,9 @@
   import { onMount } from "svelte";
   import axios from "axios";
   import pkceChallenge from "pkce-challenge";
+  import { Router, Route } from "svelte-routing";
+  import PatientMedication from './lib/MedicationDetails.svelte'
+  import PatientObservation from './lib/ObservationViewer.svelte'
   import {
     CLINET_ID,
     CODE_VERIFIER_LOCAL_STORAGE_KEY,
@@ -103,6 +106,26 @@
   {:else}
     {#if tokenResponse}
     <PatientDetails accessToken={tokenResponse.access_token} patientId={tokenResponse.patient} />
+    <Router>
+      <Route
+        path="/patient/observationList"
+        component={PatientMedication}
+        accessToken={tokenResponse.access_token} patientId={tokenResponse.patient}
+      />
+      <Route
+        path="/patient/vitals"
+        component={PatientObservation}
+        title="Vital Signs" category='vital-signs' accessToken={tokenResponse.access_token} patientId={tokenResponse.patient}
+      />
+      <Route
+        path="/patient/labResult"
+        component={PatientObservation}
+        accessToken={tokenResponse.access_token} patientId={tokenResponse.patient}
+      />
+      
+      
+
+      </Router>
     {:else}
         <div class="flex items-center main-content">
           <!-- <Button color="dark" size="md" outline>Sign in with EPIC</Button> -->

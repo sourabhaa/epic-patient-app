@@ -23,7 +23,6 @@
   };
 </script>
 
-<!-- <div class="mt-10 max-w-md mx-auto"> -->
   <div class="bg-accent-red text-white p-6 m-4 mr-5 lg:p-3 rounded-xl flex flex-col md:flex-row items-start md:items-center justify-between mb-8">
  
    
@@ -34,10 +33,10 @@
    <div class="flex items-center mb-2 md:mb-0">
     <Button>
       {#if patient?.gender === 'male'}
-      <img src={MaleIcon} alt="Patient" height="125" width="125" />
+      <img src={MaleIcon} alt="Patient" height="100" width="100" />
       {/if}
       {#if patient?.gender === 'female'}
-      <img src={FemaleIcon} alt="Patient" height="125" width="125"/>
+      <img src={FemaleIcon} alt="Patient" height="100" width="100"/>
       {/if}
     </Button>
     </div>
