@@ -19,6 +19,7 @@
     patient: string;
     scope: string;
   };
+  import PatientDetails from "./lib/PatientDetails.svelte";
   let loading = true;
   const getSecs = (date: Date) => {
     return Math.round(date.getTime() / 1000);
@@ -61,39 +62,24 @@
     );
   };
 
-  onMount(async () => {
-    const code = new URL(window.location.href).searchParams.get("code");
-    const codeVerifier = localStorage.getItem(CODE_VERIFIER_LOCAL_STORAGE_KEY);
-    try {
-      if (code && codeVerifier) {
-        await makeTokenRequest(code, codeVerifier);
-        localStorage.removeItem(CODE_VERIFIER_LOCAL_STORAGE_KEY);
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    loading = false;
+   onMount(async ()=>{
+    const code = new URL(window.location.href).searchParams.get('code')
+    const codeVerifier = localStorage.getItem(CODE_VERIFIER_LOCAL_STORAGE_KEY)
+    const tokenResponseString = localStorage.getItem(TOKEN_RESPONSE_LOCAL_STORAGE_KEY);
+    if (tokenResponseString) {
+      const tokenResponseTemp = JSON.parse(tokenResponseString)
+     
+        tokenResponse = tokenResponseTemp
 
-    // const tokenResponseString = localStorage.getItem(TOKEN_RESPONSE_LOCAL_STORAGE_KEY);
-    // if (tokenResponseString) {
-    //   const tokenResponseTemp = JSON.parse(tokenResponseString)
-    //   const {issued_at_in_secs} = tokenResponseTemp
-    //   const expires_in_secs = issued_at_in_secs + tokenResponseTemp.expires_in
-    //   const now_in_secs = getSecs(new Date())
-    //   if (now_in_secs >= expires_in_secs) {
-    //     localStorage.removeItem(TOKEN_RESPONSE_LOCAL_STORAGE_KEY)
-    //   } else {
-    //     tokenResponse = tokenResponseTemp
-    //   }
-    // }
-    // if (!tokenResponse) {
-    //   if (code && codeVerifier) {
-    //     await makeTokenRequest(code, codeVerifier)
-    //     localStorage.removeItem(CODE_VERIFIER_LOCAL_STORAGE_KEY)
-    //   }
-    // }
-    // loading = false
-  });
+    }
+    else{
+      if (code && codeVerifier) {
+        await makeTokenRequest(code, codeVerifier)
+        localStorage.removeItem(CODE_VERIFIER_LOCAL_STORAGE_KEY)
+      }
+    }
+    loading = false
+  })
   const initiateAuthorizationRequest = async () => {
     const codeChallenge = await generateCodeChallenge();
     const redirectUrl = generateRedirectUrl(codeChallenge);
@@ -111,13 +97,14 @@
     <div class="w-sidebar bg-sidebar-bg rounded-l-xl p-4 top-main-top">
       <Sidebar />
     </div>
-    <if class="flex-1 flex flex-col main-content">
+    <if class="flex-1 flex flex-col ">
       {#if loading}
-        Loading...
-      {:else if tokenResponse}
-        {JSON.stringify(tokenResponse)}
-      {:else}
-        <div class="flex items-center">
+    Loading...
+  {:else}
+    {#if tokenResponse}
+    <PatientDetails accessToken={tokenResponse.access_token} patientId={tokenResponse.patient} />
+    {:else}
+        <div class="flex items-center main-content">
           <!-- <Button color="dark" size="md" outline>Sign in with EPIC</Button> -->
           <div class="flex justify-center my-20">
             <button
@@ -127,7 +114,7 @@
           </div>
         </div>
       {/if}
-    </if>
+    {/if}
   </div>
 </div>
 
